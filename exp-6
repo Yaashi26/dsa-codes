@@ -1,0 +1,156 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct SongNode {
+    char songName[100];
+    struct SongNode* next;
+} SongNode;
+
+typedef struct {
+    SongNode* front;
+    SongNode* rear;
+    int repeat;
+    int count;
+    int maxSize;
+} MusicQueue;
+
+void initQueue(MusicQueue* q, int size) {
+    q->front = q->rear = NULL;
+    q->repeat = 0;
+    q->count = 0;
+    q->maxSize = size;
+}
+
+void enqueue(MusicQueue* q, char* songName) {
+    if (q->count >= q->maxSize) {
+        printf("🚫 Queue is full! Cannot add more songs.\n");
+        return;
+    }
+
+    SongNode* newNode = (SongNode*)malloc(sizeof(SongNode));
+    strcpy(newNode->songName, songName);
+    newNode->next = NULL;
+
+    if (q->rear == NULL) {
+        q->front = q->rear = newNode;
+    } else {
+        q->rear->next = newNode;
+        q->rear = newNode;
+    }
+
+    q->count++;
+    printf("🎵 '%s' added to the playlist.\n", songName);
+}
+
+void dequeue(MusicQueue* q) {
+    if (q->front == NULL) {
+        printf("No songs in the queue!\n");
+        return;
+    }
+
+    SongNode* temp = q->front;
+    printf("▶ Now Playing: %s\n", temp->songName);
+
+    q->front = q->front->next;
+    if (q->front == NULL)
+        q->rear = NULL;
+
+    if (q->repeat)
+        enqueue(q, temp->songName);
+
+    free(temp);
+    q->count--;
+}
+
+void peek(MusicQueue* q) {
+    if (q->front == NULL) {
+        printf("No songs queued.\n");
+        return;
+    }
+    printf("Next Song: %s\n", q->front->songName);
+}
+
+void display(MusicQueue* q) {
+    if (q->front == NULL) {
+        printf("Queue is empty.\n");
+        return;
+    }
+
+    SongNode* current = q->front;
+    printf("🎶 Playlist Queue (%d/%d):\n", q->count, q->maxSize);
+    while (current != NULL) {
+        printf("-> %s\n", current->songName);
+        current = current->next;
+    }
+}
+
+void toggleRepeat(MusicQueue* q) {
+    q->repeat = !q->repeat;
+    printf(q->repeat ? "🔁 Repeat mode is ON.\n" : "▶ Repeat mode is OFF.\n");
+}
+
+void freeQueue(MusicQueue* q) {
+    SongNode* temp;
+    while (q->front != NULL) {
+        temp = q->front;
+        q->front = q->front->next;
+        free(temp);
+    }
+    q->rear = NULL;
+    q->count = 0;
+}
+
+int main() {
+    MusicQueue playlist;
+    int choice, size;
+    char song[100];
+
+    printf("Enter maximum number of songs in the playlist: ");
+    scanf("%d", &size);
+    getchar();
+
+    initQueue(&playlist, size);
+
+    do {
+        printf("\n=== Music Playlist Menu ===\n");
+        printf("1. Add Song\n");
+        printf("2. Play Song\n");
+        printf("3. Show Next Song\n");
+        printf("4. Display Queue\n");
+        printf("5. Toggle Repeat\n");
+        printf("6. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+        getchar();
+
+        switch (choice) {
+            case 1:
+                printf("Enter song name: ");
+                fgets(song, sizeof(song), stdin);
+                song[strcspn(song, "\n")] = '\0';
+                enqueue(&playlist, song);
+                break;
+            case 2:
+                dequeue(&playlist);
+                break;
+            case 3:
+                peek(&playlist);
+                break;
+            case 4:
+                display(&playlist);
+                break;
+            case 5:
+                toggleRepeat(&playlist);
+                break;
+            case 6:
+                freeQueue(&playlist);
+                printf("Exiting playlist...\n");
+                break;
+            default:
+                printf("Invalid choice!\n");
+        }
+    } while (choice != 6);
+
+    return 0;
+}
