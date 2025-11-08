@@ -1,0 +1,130 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+int *queue;       // Dynamic array for queue
+int front = -1;
+int rear = -1;
+int maxSize;      // User-defined size
+
+// Function to check if the queue is empty
+bool isEmpty() {
+    return front == -1 && rear == -1;
+}
+
+// Function to check if the queue is full
+bool isFull() {
+    return rear == maxSize - 1;
+}
+
+// Function to insert data to the rear of the queue
+void enqueue(int data) {
+    if (isFull()) {
+        printf("Queue is full! Overflow!!\n");
+    } else if (isEmpty()) {
+        front = rear = 0;
+        queue[rear] = data;
+    } else {
+        rear++;
+        queue[rear] = data;
+    }
+}
+
+// Function to delete data from the front of the queue
+int dequeue() {
+    int data;
+    if (isEmpty()) {
+        printf("Queue is Empty! Underflow!!\n");
+        return -1;
+    } else if (front == rear) {
+        data = queue[front];
+        front = rear = -1;
+        return data;
+    } else {
+        data = queue[front];
+        front++;
+        return data;
+    }
+}
+
+// Function to get the front element
+int getFront() {
+    if (isEmpty()) {
+        printf("Queue is Empty! Underflow!!\n");
+        return -1;
+    }
+    return queue[front];
+}
+
+// Function to get the rear element
+int getRear() {
+    if (isEmpty()) {
+        printf("Queue is Empty! Underflow!!\n");
+        return -1;
+    }
+    return queue[rear];
+}
+
+int main() {
+    int choice, data;
+
+    printf("Enter the size of the queue: ");
+    scanf("%d", &maxSize);
+
+    queue = (int *)malloc(maxSize * sizeof(int));
+    if (queue == NULL) {
+        printf("Memory allocation failed. Exiting.\n");
+        return 1;
+    }
+
+    printf("\nLinear Queue Implementation using Array\n");
+
+    do {
+        printf("\n1. Enqueue\n");
+        printf("2. Dequeue\n");
+        printf("3. Get Front Element\n");
+        printf("4. Get Rear Element\n");
+        printf("5. Check if Queue is Empty\n");
+        printf("6. Check if Queue is Full\n");
+        printf("7. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                printf("Enter data to enqueue: ");
+                scanf("%d", &data);
+                enqueue(data);
+                break;
+            case 2:
+                data = dequeue();
+                if (data != -1)
+                    printf("Dequeued element is: %d\n", data);
+                break;
+            case 3:
+                data = getFront();
+                if (data != -1)
+                    printf("Front element is: %d\n", data);
+                break;
+            case 4:
+                data = getRear();
+                if (data != -1)
+                    printf("Rear element is: %d\n", data);
+                break;
+            case 5:
+                printf(isEmpty() ? "Queue is empty.\n" : "Queue is not empty.\n");
+                break;
+            case 6:
+                printf(isFull() ? "Queue is full.\n" : "Queue is not full.\n");
+                break;
+            case 7:
+                printf("Exiting program.\n");
+                break;
+            default:
+                printf("Invalid choice! Please try again.\n");
+        }
+    } while (choice != 7);
+
+    free(queue); // Free allocated memory
+    return 0;
+}
