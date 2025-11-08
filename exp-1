@@ -1,0 +1,86 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int *stack;     // Pointer to hold stack elements
+int top = -1;   // Initialize top of stack
+int maxSize;    // User-defined stack size
+
+// Function to check if the stack is full
+int isFull() {
+    return top == maxSize - 1;
+}
+
+// Function to check if the stack is empty
+int isEmpty() {
+    return top == -1;
+}
+
+// Function to push an element onto the stack
+void push() {
+    int value;
+    if (isFull()) {
+        printf("Stack Overflow\n");
+    } else {
+        printf("Enter value to push: ");
+        scanf("%d", &value);
+        top++;
+        stack[top] = value;
+        printf("Element inserted successfully\n");
+    }
+}
+
+// Function to pop an element from the stack
+void pop() {
+    if (isEmpty()) {
+        printf("Stack Underflow\n");
+    } else {
+        printf("Deleted element = %d\n", stack[top]);
+        top--;
+        printf("Element deleted successfully\n");
+    }
+}
+
+// Function to display the menu
+void showMenu() {
+    printf("\nStack Operations Menu\n");
+    printf("1. Push\n");
+    printf("2. Pop\n");
+    printf("3. Exit\n");
+    printf("Enter your choice: ");
+}
+
+int main() {
+    int choice;
+
+    // Ask user for stack size
+    printf("Enter the size of the stack: ");
+    scanf("%d", &maxSize);
+
+    // Allocate memory for stack
+    stack = (int *)malloc(maxSize * sizeof(int));
+    if (stack == NULL) {
+        printf("Memory allocation failed. Exiting.\n");
+        return 1;
+    }
+    // Menu loop
+    while (1) {
+        showMenu();
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                push();
+                break;
+            case 2:
+                pop();
+                break;
+            case 3:
+                printf("Exiting program.\n");
+                free(stack);  // Free allocated memory
+                exit(0);
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+    }
+    return 0;
+}
