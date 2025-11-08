@@ -1,0 +1,108 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>   // for isalnum()
+#include <string.h>  // for strlen()
+
+char *stack;   // Dynamic stack
+int top = -1;
+int maxSize;   // User-defined stack size
+
+// Push function
+void push(char c) {
+    if (top == maxSize - 1) {
+        printf("Stack Overflow\n");
+        return;
+    }
+    stack[++top] = c;
+}
+
+// Pop function
+char pop() {
+    if (top == -1) {
+        return -1; // stack empty
+    }
+    return stack[top--];
+}
+
+// Peek function
+char peek() {
+    if (top == -1)
+        return -1;
+    return stack[top];
+}
+
+// Function to define precedence of operators
+int precedence(char c) {
+    switch (c) {
+        case '^': return 3;
+        case '*':
+        case '/': return 2;
+        case '+':
+        case '-': return 1;
+        default:  return 0;
+    }
+}
+
+// Function to convert infix to postfix
+void infixToPostfix(char infix[]) {
+    char *postfix = (char *)malloc((strlen(infix) + 1) * sizeof(char));
+    int i, k = 0;
+    char ch;
+
+    for (i = 0; infix[i] != '\0'; i++) {
+        ch = infix[i];
+
+        if (isalnum(ch)) {
+            postfix[k++] = ch;
+        } else if (ch == '(') {
+            push(ch);
+        } else if (ch == ')') {
+            while (top != -1 && peek() != '(') {
+                postfix[k++] = pop();
+            }
+            pop(); // discard '('
+        } else {
+            while (top != -1 && precedence(peek()) >= precedence(ch)) {
+                postfix[k++] = pop();
+            }
+            push(ch);
+        }
+    }
+
+    while (top != -1) {
+        postfix[k++] = pop();
+    }
+
+    postfix[k] = '\0';
+    printf("Postfix Expression: %s\n", postfix);
+    free(postfix);
+}
+
+int main() {
+    char *infix;
+
+    printf("Enter the maximum size of the stack: ");
+    scanf("%d", &maxSize);
+
+    stack = (char *)malloc(maxSize * sizeof(char));
+    if (stack == NULL) {
+        printf("Memory allocation failed. Exiting.\n");
+        return 1;
+    }
+
+    infix = (char *)malloc(maxSize * sizeof(char));
+    if (infix == NULL) {
+        printf("Memory allocation failed. Exiting.\n");
+        free(stack);
+        return 1;
+    }
+
+    printf("Enter an infix expression: ");
+    scanf("%s", infix);
+
+    infixToPostfix(infix);
+
+    free(stack);
+    free(infix);
+    return 0;
+}
