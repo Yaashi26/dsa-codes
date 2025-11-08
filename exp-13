@@ -1,0 +1,91 @@
+#include <stdio.h>
+
+void selectionSort(int arr[], int n) {
+    int i, j, min, temp;
+    for (i = 0; i < n - 1; i++) {
+        min = i;
+        for (j = i + 1; j < n; j++) {
+            if (arr[j] < arr[min])
+                min = j;
+        }
+        temp = arr[i];
+        arr[i] = arr[min];
+        arr[min] = temp;
+    }
+}
+
+void bubbleSort(int arr[], int n) {
+    int i, j, temp;
+    for (i = 0; i < n - 1; i++) {
+        for (j = 0; j < n - i - 1; j++) {
+            if (arr[j] > arr[j + 1]) {
+                temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
+            }
+        }
+    }
+}
+
+void insertionSort(int arr[], int n) {
+    int i, j, key;
+    for (i = 1; i < n; i++) {
+        key = arr[i];
+        j = i - 1;
+        while (j >= 0 && arr[j] > key) {
+            arr[j + 1] = arr[j];
+            j--;
+        }
+        arr[j + 1] = key;
+    }
+}
+
+void display(int arr[], int n) {
+    for (int i = 0; i < n; i++)
+        printf("%d ", arr[i]);
+    printf("\n");
+}
+
+int main() {
+    int arr[50], n, choice;
+    while (1) {
+        printf("\nMenu:\n");
+        printf("1. Selection Sort\n");
+        printf("2. Bubble Sort\n");
+        printf("3. Insertion Sort\n");
+        printf("4. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        if (choice == 4) {
+            printf("Exiting program...\n");
+            break;
+        }
+
+        printf("Enter number of elements: ");
+        scanf("%d", &n);
+        printf("Enter elements: ");
+        for (int i = 0; i < n; i++)
+            scanf("%d", &arr[i]);
+
+        switch (choice) {
+            case 1:
+                selectionSort(arr, n);
+                printf("Sorted using Selection Sort: ");
+                break;
+            case 2:
+                bubbleSort(arr, n);
+                printf("Sorted using Bubble Sort: ");
+                break;
+            case 3:
+                insertionSort(arr, n);
+                printf("Sorted using Insertion Sort: ");
+                break;
+            default:
+                printf("Invalid choice!\n");
+                continue;
+        }
+        display(arr, n);
+    }
+    return 0;
+}
